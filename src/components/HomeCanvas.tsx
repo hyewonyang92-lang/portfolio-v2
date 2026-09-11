@@ -162,11 +162,6 @@ export default function HomeCanvas({ projects }: { projects: Project[] }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [isDesktop, goNext, goPrev, navigate, href]);
 
-  const cursorProps = {
-    onMouseEnter: () => setCursor("view-project"),
-    onMouseLeave: resetCursor,
-  };
-
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartRef.current = {
@@ -384,12 +379,7 @@ export default function HomeCanvas({ projects }: { projects: Project[] }) {
               className="flex flex-col items-start gap-3"
             >
               <span className="text-ui">{project.category}</span>
-              <Link
-                href={href}
-                onClick={handleView}
-                {...cursorProps}
-                className={pillClass(false, isDesktop ? "cursor-none" : "")}
-              >
+              <Link href={href} onClick={handleView} className={pillClass(false)}>
                 VIEW CASE →
               </Link>
             </motion.div>
