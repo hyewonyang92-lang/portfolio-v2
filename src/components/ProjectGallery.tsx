@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import ProjectVisual from "./ProjectVisual";
 import { useCursor } from "@/lib/cursor-context";
 import { useDesktopInteraction } from "@/lib/use-desktop-interaction";
+import { pillClass } from "@/lib/pill";
 
 interface ProjectGalleryProps {
   tones: number[];
@@ -92,15 +93,15 @@ export default function ProjectGallery({ tones }: ProjectGalleryProps) {
       </div>
 
       <div className="flex items-center justify-between">
-        <span className="text-meta text-[var(--color-text-secondary)]">
+        <span className="text-ui">
           {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
         </span>
-        <div className="flex gap-4 md:hidden">
+        <div className="flex gap-2 md:hidden">
           <button
             type="button"
             aria-label="Previous image"
             onClick={goPrev}
-            className="text-meta"
+            className={pillClass(false)}
           >
             ← PREV
           </button>
@@ -108,7 +109,7 @@ export default function ProjectGallery({ tones }: ProjectGalleryProps) {
             type="button"
             aria-label="Next image"
             onClick={goNext}
-            className="text-meta"
+            className={pillClass(false)}
           >
             NEXT →
           </button>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import ProjectIndex from "@/components/ProjectIndex";
 import ScrollReveal from "@/components/ScrollReveal";
 import { projects } from "@/data/projects";
+import { tagClass } from "@/lib/pill";
 
 export const metadata: Metadata = {
   title: "Work — Yang Hyewon",
@@ -9,16 +10,13 @@ export const metadata: Metadata = {
 
 export default function WorkPage() {
   return (
-    <div className="pt-[72px] md:pt-[88px]">
+    <div className="pb-24 md:pt-[88px] md:pb-0">
       <section className="container-editorial pt-16 pb-16 md:pt-24 md:pb-24">
         <ScrollReveal>
-          <h1 className="text-display uppercase">
-            Work
-            <br />
-            Selected Projects
-            <br />
-            &amp; Archive
-          </h1>
+          <span className={tagClass("mb-4 inline-flex")}>Work</span>
+          <p className="text-body max-w-xl">
+            Selected projects &amp; archive.
+          </p>
         </ScrollReveal>
       </section>
 

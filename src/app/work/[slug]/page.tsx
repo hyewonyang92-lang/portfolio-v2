@@ -6,6 +6,7 @@ import ProjectGallery from "@/components/ProjectGallery";
 import NextProject from "@/components/NextProject";
 import ScrollReveal from "@/components/ScrollReveal";
 import { getAdjacentProject, getProjectBySlug, projects } from "@/data/projects";
+import { tagClass } from "@/lib/pill";
 
 export function generateStaticParams() {
   return projects.map((project) => ({ slug: project.slug }));
@@ -40,9 +41,7 @@ export default async function ProjectDetailPage({
 
       <section className="container-editorial pb-24 md:pb-32">
         <ScrollReveal>
-          <span className="text-meta mb-8 block text-[var(--color-text-secondary)]">
-            GALLERY
-          </span>
+          <span className={tagClass("mb-8 inline-flex")}>Gallery</span>
           <ProjectGallery tones={project.gallery} />
         </ScrollReveal>
       </section>

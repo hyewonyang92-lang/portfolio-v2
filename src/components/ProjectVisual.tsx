@@ -31,7 +31,7 @@ export default function ProjectVisual({
       {label && (
         <span
           aria-hidden
-          className="absolute -bottom-[0.18em] left-1/2 -translate-x-1/2 whitespace-nowrap font-semibold uppercase text-[#111]/[0.06] select-none"
+          className="absolute -bottom-[0.18em] left-1/2 -translate-x-1/2 whitespace-nowrap font-medium uppercase text-[var(--color-text)]/[0.06] select-none"
           style={{ fontSize: "18vw", letterSpacing: "-0.04em", lineHeight: 1 }}
         >
           {label}

@@ -13,6 +13,7 @@ import ProjectVisual from "./ProjectVisual";
 import { useCursor } from "@/lib/cursor-context";
 import { useDesktopInteraction } from "@/lib/use-desktop-interaction";
 import { usePageTransition } from "@/lib/transition-context";
+import { pillClass, tagClass } from "@/lib/pill";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 const LOCK_MS = 800;
@@ -175,6 +176,9 @@ export default function HomeCanvas({ projects }: { projects: Project[] }) {
     }
   };
 
+  // Core project-switch transitions (image + title + number) stay as
+  // deliberate transform-based motion; only the secondary chrome around
+  // them (nav pills, links) is restricted to color transitions.
   const imageVariants: Variants = shouldReduceMotion
     ? {
         enter: { opacity: 0 },
@@ -224,7 +228,7 @@ export default function HomeCanvas({ projects }: { projects: Project[] }) {
   const metaDelay = hasInteracted ? 0.15 : 1.05;
 
   const projectNumber = (
-    <span className="text-meta text-[var(--color-text-secondary)]">
+    <span className="text-ui">
       <span className="inline-block overflow-hidden align-bottom">
         <AnimatePresence mode="wait" custom={direction} initial={false}>
           <motion.span
@@ -256,7 +260,7 @@ export default function HomeCanvas({ projects }: { projects: Project[] }) {
           transition={{ duration: 0.6, ease: EASE }}
           className="absolute top-[132px] left-0 z-0 w-full px-12"
         >
-          <p className="text-intro max-w-4xl uppercase">
+          <p className="text-body max-w-md uppercase">
             {INTRO_LINES.map((line, i) => (
               <span key={line} className="block overflow-hidden">
                 <motion.span
@@ -313,9 +317,11 @@ export default function HomeCanvas({ projects }: { projects: Project[] }) {
         </motion.div>
 
         <div className="absolute bottom-[120px] left-12 z-20 flex flex-col gap-3">
+          {projectNumber}
+
           <div className="overflow-hidden">
             <AnimatePresence mode="wait" custom={direction} initial={false}>
-              <motion.h2
+              <motion.span
                 key={`${project.slug}-title`}
                 custom={direction}
                 variants={titleVariants}
@@ -323,10 +329,10 @@ export default function HomeCanvas({ projects }: { projects: Project[] }) {
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.6, delay: titleDelay, ease: EASE }}
-                className="text-h1 uppercase"
+                className={tagClass("w-fit")}
               >
                 {project.title}
-              </motion.h2>
+              </motion.span>
             </AnimatePresence>
           </div>
 
@@ -339,23 +345,16 @@ export default function HomeCanvas({ projects }: { projects: Project[] }) {
               animate={{ opacity: 1, y: 0 }}
               exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -10 }}
               transition={{ duration: 0.4, delay: metaDelay, ease: EASE }}
-              className="flex flex-col gap-3"
+              className="flex flex-col items-start gap-3"
             >
-              <span className="text-meta text-[var(--color-text-secondary)]">
-                {project.number} / {String(total).padStart(2, "0")} —{" "}
-                {project.category}
-              </span>
+              <span className="text-ui">{project.category}</span>
               <Link
                 href={href}
                 onClick={handleView}
                 {...cursorProps}
-                className={`group/link text-meta relative inline-flex w-fit items-center gap-2 ${
-                  isDesktop ? "cursor-none" : ""
-                }`}
+                className={pillClass(false, isDesktop ? "cursor-none" : "")}
               >
-                VIEW CASE
-                <span aria-hidden>→</span>
-                <span className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-[var(--color-text)] transition-transform duration-300 group-hover/link:scale-x-100" />
+                VIEW CASE →
               </Link>
             </motion.div>
           </AnimatePresence>
@@ -365,30 +364,26 @@ export default function HomeCanvas({ projects }: { projects: Project[] }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.9, ease: EASE }}
-          className="absolute bottom-12 left-12 z-20 flex items-center gap-4"
+          className="absolute bottom-12 left-12 z-20 flex items-center gap-2"
         >
           <button
             type="button"
             onClick={goPrev}
             disabled={index === 0}
-            className="text-meta group/nav relative inline-flex items-center transition-opacity duration-200 disabled:opacity-30"
+            className={pillClass(false, "disabled:pointer-events-none disabled:opacity-30")}
             aria-label="Previous project"
           >
-            <span className="transition-transform duration-300 group-hover/nav:-translate-x-1">
-              PREV
-            </span>
+            PREV
           </button>
           {projectNumber}
           <button
             type="button"
             onClick={goNext}
             disabled={index === total - 1}
-            className="text-meta group/nav relative inline-flex items-center transition-opacity duration-200 disabled:opacity-30"
+            className={pillClass(false, "disabled:pointer-events-none disabled:opacity-30")}
             aria-label="Next project"
           >
-            <span className="transition-transform duration-300 group-hover/nav:translate-x-1">
-              NEXT
-            </span>
+            NEXT
           </button>
         </motion.div>
 
@@ -396,26 +391,20 @@ export default function HomeCanvas({ projects }: { projects: Project[] }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.95, ease: EASE }}
-          className="absolute right-12 bottom-12 z-20 flex gap-6"
+          className="absolute right-12 bottom-12 z-20 flex gap-2"
         >
-          <Link
-            href="/information"
-            className="text-meta transition-opacity duration-200 hover:opacity-60"
-          >
+          <Link href="/information" className={pillClass(false)}>
             ABOUT
           </Link>
           <a
             href="https://www.linkedin.com"
             target="_blank"
             rel="noreferrer"
-            className="text-meta transition-opacity duration-200 hover:opacity-60"
+            className={pillClass(false)}
           >
             LINKEDIN
           </a>
-          <a
-            href="mailto:hyewonyang92@gmail.com"
-            className="text-meta transition-opacity duration-200 hover:opacity-60"
-          >
+          <a href="mailto:hyewonyang92@gmail.com" className={pillClass(false)}>
             EMAIL
           </a>
         </motion.div>
@@ -425,9 +414,9 @@ export default function HomeCanvas({ projects }: { projects: Project[] }) {
       <section
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        className="flex flex-col gap-8 px-5 pt-[104px] pb-12 md:hidden"
+        className="flex flex-col gap-8 px-5 pt-8 pb-24 md:hidden"
       >
-        <p className="text-intro uppercase">{INTRO_LINES.join(" ")}</p>
+        <p className="text-body uppercase">{INTRO_LINES.join(" ")}</p>
 
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
@@ -445,60 +434,56 @@ export default function HomeCanvas({ projects }: { projects: Project[] }) {
                 label={project.number}
               />
             </Link>
-            <div className="flex flex-col gap-2">
-              <span className="text-meta text-[var(--color-text-secondary)]">
+            <div className="flex flex-col items-start gap-3">
+              <span className="text-ui">
                 {project.number} / {String(total).padStart(2, "0")} —{" "}
                 {project.category}
               </span>
-              <h2 className="text-h1 uppercase">{project.title}</h2>
-              <Link
-                href={href}
-                onClick={handleView}
-                className="text-meta w-fit border-b border-[var(--color-text)] pb-1"
-              >
+              <span className={tagClass("w-fit")}>{project.title}</span>
+              <Link href={href} onClick={handleView} className={pillClass(false)}>
                 VIEW CASE →
               </Link>
             </div>
           </motion.div>
         </AnimatePresence>
 
-        <div className="flex items-center justify-between border-t border-[var(--color-border)] pt-6">
-          <span className="text-meta text-[var(--color-text-secondary)]">
+        <div className="flex items-center justify-between border-t border-[var(--color-gray)] pt-6">
+          <span className="text-ui">
             {project.number} / {String(total).padStart(2, "0")}
           </span>
-          <div className="flex gap-6">
+          <div className="flex gap-2">
             <button
               type="button"
               onClick={goPrev}
               disabled={index === 0}
-              className="text-meta disabled:opacity-30"
+              className={pillClass(false, "disabled:pointer-events-none disabled:opacity-30")}
             >
-              ← PREV
+              PREV
             </button>
             <button
               type="button"
               onClick={goNext}
               disabled={index === total - 1}
-              className="text-meta disabled:opacity-30"
+              className={pillClass(false, "disabled:pointer-events-none disabled:opacity-30")}
             >
-              NEXT →
+              NEXT
             </button>
           </div>
         </div>
 
-        <div className="flex gap-6">
-          <Link href="/information" className="text-meta">
+        <div className="flex gap-2">
+          <Link href="/information" className={pillClass(false)}>
             ABOUT
           </Link>
           <a
             href="https://www.linkedin.com"
             target="_blank"
             rel="noreferrer"
-            className="text-meta"
+            className={pillClass(false)}
           >
             LINKEDIN
           </a>
-          <a href="mailto:hyewonyang92@gmail.com" className="text-meta">
+          <a href="mailto:hyewonyang92@gmail.com" className={pillClass(false)}>
             EMAIL
           </a>
         </div>

@@ -7,6 +7,7 @@ import type { Project } from "@/types/project";
 import ProjectVisual from "./ProjectVisual";
 import { useCursor } from "@/lib/cursor-context";
 import { useDesktopInteraction } from "@/lib/use-desktop-interaction";
+import { pillClass, tagClass } from "@/lib/pill";
 
 interface ProjectIndexProps {
   projects: Project[];
@@ -24,9 +25,9 @@ export default function ProjectIndex({
   return (
     <div className="grid-editorial">
       <div className="col-span-4 md:col-span-8 lg:col-span-8">
-        <ul className="border-t border-[var(--color-border)]">
+        <ul className="border-t border-[var(--color-gray)]">
           {projects.map((project, i) => (
-            <li key={project.slug} className="border-b border-[var(--color-border)]">
+            <li key={project.slug} className="border-b border-[var(--color-gray)]">
               <Link
                 href={`/work/${project.slug}`}
                 onMouseEnter={() => {
@@ -39,7 +40,7 @@ export default function ProjectIndex({
                 }}
                 onFocus={() => setActiveIndex(i)}
                 onBlur={() => setActiveIndex(null)}
-                className={`group flex items-baseline justify-between gap-4 py-5 transition-opacity duration-300 md:py-7 ${
+                className={`group flex items-center justify-between gap-4 py-4 transition-opacity duration-300 md:py-5 ${
                   isDesktop ? "cursor-none" : ""
                 } ${
                   activeIndex !== null && activeIndex !== i
@@ -47,16 +48,14 @@ export default function ProjectIndex({
                     : "opacity-100"
                 }`}
               >
-                <span className="flex items-baseline gap-4 md:gap-8">
-                  <span className="text-meta text-[var(--color-text-secondary)]">
+                <span className="flex items-center gap-4 md:gap-6">
+                  <span className="text-ui w-6 text-[var(--color-text)]">
                     {project.number}
                   </span>
-                  <span className="text-h2 uppercase transition-transform duration-300 group-hover:translate-x-2">
-                    {project.title}
-                  </span>
+                  <span className={pillClass(false)}>{project.title}</span>
                 </span>
                 {showMeta && (
-                  <span className="text-meta hidden shrink-0 text-[var(--color-text-secondary)] md:block">
+                  <span className={tagClass("hidden shrink-0 md:inline-flex")}>
                     {project.category} — {project.year}
                   </span>
                 )}

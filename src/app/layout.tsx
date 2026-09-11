@@ -11,7 +11,7 @@ import { PageTransitionProvider } from "@/lib/transition-context";
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["500"],
 });
 
 export const metadata: Metadata = {

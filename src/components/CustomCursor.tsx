@@ -54,7 +54,7 @@ export default function CustomCursor() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.5 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="flex h-24 w-24 flex-col items-center justify-center gap-0.5 rounded-full bg-[#111111] text-white"
+            className="flex h-24 w-24 flex-col items-center justify-center gap-0.5 rounded-full bg-[var(--color-text)] text-white"
           >
             <span className="text-[10px] font-medium tracking-[0.08em] uppercase">
               {circleLines[0]}
@@ -71,7 +71,7 @@ export default function CustomCursor() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.85 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
-            className="block whitespace-nowrap rounded-full bg-[#111111] px-4 py-2 text-[11px] font-medium tracking-[0.08em] text-white uppercase"
+            className="block whitespace-nowrap rounded-full bg-[var(--color-text)] px-4 py-2 text-[11px] font-medium tracking-[0.08em] text-white uppercase"
           >
             {cursor.label}
           </motion.span>

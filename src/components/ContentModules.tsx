@@ -1,6 +1,7 @@
 import type { ContentModule } from "@/types/project";
 import ProjectVisual from "./ProjectVisual";
 import ScrollReveal from "./ScrollReveal";
+import { tagClass } from "@/lib/pill";
 
 export default function ContentModules({
   modules,
@@ -37,11 +38,9 @@ export default function ContentModules({
           <ScrollReveal key={i} className="container-editorial">
             <div className="grid-editorial">
               <div className="col-span-4 md:col-span-2 lg:col-span-3">
-                <span className="text-meta text-[var(--color-text-secondary)]">
-                  {mod.heading}
-                </span>
+                <span className={tagClass()}>{mod.heading}</span>
               </div>
-              <p className="text-h2 col-span-4 max-w-2xl md:col-span-6 lg:col-span-9">
+              <p className="text-body col-span-4 max-w-2xl md:col-span-6 lg:col-span-9">
                 {mod.body}
               </p>
             </div>
