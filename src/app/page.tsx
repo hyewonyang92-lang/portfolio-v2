@@ -2,11 +2,12 @@ import Link from "next/link";
 import HeroTypography from "@/components/HeroTypography";
 import ProjectShowcase from "@/components/ProjectShowcase";
 import ScrollReveal from "@/components/ScrollReveal";
+import HomeEntrance from "@/components/HomeEntrance";
 import { projects } from "@/data/projects";
 
 export default function Home() {
   return (
-    <>
+    <HomeEntrance>
       <HeroTypography />
 
       <div className="flex flex-col">
@@ -47,6 +48,6 @@ export default function Home() {
           </ScrollReveal>
         </div>
       </section>
-    </>
+    </HomeEntrance>
   );
 }

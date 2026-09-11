@@ -4,7 +4,9 @@ import "./globals.css";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import CustomCursor from "@/components/CustomCursor";
+import TransitionShell from "@/components/TransitionShell";
 import { CursorProvider } from "@/lib/cursor-context";
+import { PageTransitionProvider } from "@/lib/transition-context";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -20,14 +22,20 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      className={`${inter.variable} h-full antialiased`}
+    >
       <body className="flex min-h-full flex-col">
-        <CursorProvider>
-          <Navigation />
-          <CustomCursor />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </CursorProvider>
+        <PageTransitionProvider>
+          <CursorProvider>
+            <Navigation />
+            <CustomCursor />
+            <TransitionShell>{children}</TransitionShell>
+            <Footer />
+          </CursorProvider>
+        </PageTransitionProvider>
       </body>
     </html>
   );

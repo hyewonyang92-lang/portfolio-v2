@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import MobileMenu from "./MobileMenu";
 
 const LINKS = [
@@ -13,12 +14,18 @@ const LINKS = [
 
 export default function Navigation() {
   const pathname = usePathname();
+  const isHome = pathname === "/";
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <>
       <header className="fixed top-0 left-0 z-50 w-full border-b border-[var(--color-border)] bg-[var(--color-bg)]">
-        <div className="container-editorial flex h-[72px] items-center justify-between md:h-[88px]">
+        <motion.div
+          initial={isHome ? { opacity: 0, y: -8 } : false}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          className="container-editorial flex h-[72px] items-center justify-between md:h-[88px]"
+        >
           <Link
             href="/"
             className="text-meta group inline-flex items-center gap-2"
@@ -60,7 +67,7 @@ export default function Navigation() {
           >
             MENU
           </button>
-        </div>
+        </motion.div>
       </header>
 
       <MobileMenu

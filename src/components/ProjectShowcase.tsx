@@ -2,11 +2,18 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import {
+  motion,
+  useInView,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import type { Project } from "@/types/project";
 import ProjectVisual from "./ProjectVisual";
 import { useCursor } from "@/lib/cursor-context";
 import { useDesktopInteraction } from "@/lib/use-desktop-interaction";
+import { usePageTransition } from "@/lib/transition-context";
 
 type SceneVariant = "full-bleed" | "overlap" | "asymmetric-right" | "large-centered";
 
@@ -33,7 +40,19 @@ export default function ProjectShowcase({
   const imageRef = useRef<HTMLDivElement>(null);
   const { setCursor, resetCursor } = useCursor();
   const { isDesktop } = useDesktopInteraction();
+  const { navigate } = usePageTransition();
   const shouldReduceMotion = useReducedMotion();
+  // Observed once against the whole (viewport-tall) section rather than each
+  // small child, so a fast scroll can't skip past a short element between
+  // IntersectionObserver checks and leave it permanently hidden.
+  const isInView = useInView(sectionRef, { once: true, amount: 0.2 });
+  const revealed = isInView || shouldReduceMotion;
+
+  const href = `/work/${project.slug}`;
+  const handleNavigate = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigate(href);
+  };
 
   const { scrollYProgress } = useScroll({
     target: imageRef,
@@ -42,40 +61,54 @@ export default function ProjectShowcase({
   const parallaxY = useTransform(
     scrollYProgress,
     [0, 1],
-    shouldReduceMotion ? [0, 0] : [40, -40],
+    shouldReduceMotion ? [0, 0] : [24, -24],
   );
 
   const meta = (
-    <div className="flex flex-col gap-3">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      className="flex flex-col gap-3"
+    >
       <span className="text-meta text-[var(--color-text-secondary)]">
         {project.number} / {String(total).padStart(2, "0")} — {project.category}
       </span>
-    </div>
+    </motion.div>
   );
 
   const title = (
-    <motion.h3
-      initial={shouldReduceMotion ? undefined : { opacity: 0, y: 32 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.4 }}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className={
-        variant === "large-centered"
-          ? "text-jumbo text-center uppercase"
-          : "text-jumbo uppercase"
-      }
-    >
-      {project.title}
-    </motion.h3>
+    <div className="overflow-hidden">
+      <motion.h3
+        initial={{ opacity: 0, y: "100%" }}
+        animate={
+          revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: "100%" }
+        }
+        transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+        className={
+          variant === "large-centered"
+            ? "text-jumbo text-center uppercase"
+            : "text-jumbo uppercase"
+        }
+      >
+        {project.title}
+      </motion.h3>
+    </div>
   );
 
   const info = (
-    <div className="flex items-baseline gap-6">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+      transition={{ duration: 0.5, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+      className="flex items-baseline gap-6"
+    >
       <span className="text-meta text-[var(--color-text-secondary)]">
         {project.year}
       </span>
       <Link
-        href={`/work/${project.slug}`}
+        href={href}
+        onClick={handleNavigate}
         onMouseEnter={() => setCursor("view-project")}
         onMouseLeave={resetCursor}
         className={`group/link text-meta relative inline-flex items-center gap-2 ${
@@ -86,7 +119,7 @@ export default function ProjectShowcase({
         <span aria-hidden>→</span>
         <span className="absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-[var(--color-text)] transition-transform duration-300 group-hover/link:scale-x-100" />
       </Link>
-    </div>
+    </motion.div>
   );
 
   const image = (
@@ -99,26 +132,35 @@ export default function ProjectShowcase({
       }}
     >
       <motion.div
-        style={{ y: isDesktop ? parallaxY : 0 }}
-        initial={shouldReduceMotion ? undefined : { opacity: 0, scale: 1.08 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-        className="h-[130%] w-full"
+        initial={{ clipPath: "inset(0% 0% 100% 0%)" }}
+        animate={{
+          clipPath: revealed ? "inset(0% 0% 0% 0%)" : "inset(0% 0% 100% 0%)",
+        }}
+        transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        className="h-full w-full"
       >
-        <ProjectVisual
-          tone={project.tone}
-          ratio="h-full"
-          className="h-full transition-transform duration-700 ease-[var(--ease-editorial)] group-hover:scale-[1.03]"
-          label={project.number}
-        />
+        <motion.div
+          style={{ y: isDesktop ? parallaxY : 0 }}
+          initial={{ scale: 1.05 }}
+          animate={{ scale: revealed ? 1 : 1.05 }}
+          transition={{ duration: 1.1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="h-[130%] w-full"
+        >
+          <ProjectVisual
+            tone={project.tone}
+            ratio="h-full"
+            className="h-full transition-transform duration-[600ms] ease-[var(--ease-editorial)] group-hover:scale-[1.03]"
+            label={project.number}
+          />
+        </motion.div>
       </motion.div>
     </div>
   );
 
   const viewProjectLink = (
     <Link
-      href={`/work/${project.slug}`}
+      href={href}
+      onClick={handleNavigate}
       onMouseEnter={() => setCursor("view-project")}
       onMouseLeave={resetCursor}
       className={`block ${isDesktop ? "cursor-none" : ""}`}

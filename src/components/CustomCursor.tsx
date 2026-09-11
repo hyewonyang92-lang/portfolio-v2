@@ -2,12 +2,19 @@
 
 import { useEffect } from "react";
 import { AnimatePresence, motion, useMotionValue, useSpring } from "framer-motion";
-import { useCursor } from "@/lib/cursor-context";
+import { usePathname } from "next/navigation";
+import { useCursor, type CursorVariant } from "@/lib/cursor-context";
 import { useDesktopInteraction } from "@/lib/use-desktop-interaction";
+
+const CIRCLE_LINES: Partial<Record<CursorVariant, [string, string]>> = {
+  "view-project": ["VIEW", "PROJECT"],
+};
 
 export default function CustomCursor() {
   const { cursor } = useCursor();
   const { isDesktop, reducedMotion } = useDesktopInteraction();
+  const pathname = usePathname();
+  const isHome = pathname === "/";
 
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
@@ -27,6 +34,7 @@ export default function CustomCursor() {
   if (!isDesktop) return null;
 
   const visible = cursor.variant !== "default";
+  const circleLines = isHome ? CIRCLE_LINES[cursor.variant] : undefined;
 
   return (
     <motion.div
@@ -39,7 +47,24 @@ export default function CustomCursor() {
       }}
     >
       <AnimatePresence>
-        {visible && (
+        {visible && circleLines && (
+          <motion.div
+            key={cursor.variant}
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            className="flex h-24 w-24 flex-col items-center justify-center gap-0.5 rounded-full bg-[#111111] text-white"
+          >
+            <span className="text-[10px] font-medium tracking-[0.08em] uppercase">
+              {circleLines[0]}
+            </span>
+            <span className="text-[10px] font-medium tracking-[0.08em] uppercase">
+              {circleLines[1]}
+            </span>
+          </motion.div>
+        )}
+        {visible && !circleLines && (
           <motion.span
             key={cursor.variant}
             initial={{ opacity: 0, scale: 0.85 }}
