@@ -19,7 +19,13 @@ export default function Navigation() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 z-50 w-full border-b border-[var(--color-border)] bg-[var(--color-bg)]">
+      <header
+        className={`fixed top-0 left-0 z-50 w-full ${
+          isHome
+            ? ""
+            : "border-b border-[var(--color-border)] bg-[var(--color-bg)]"
+        }`}
+      >
         <motion.div
           initial={isHome ? { opacity: 0, y: -8 } : false}
           animate={{ opacity: 1, y: 0 }}
