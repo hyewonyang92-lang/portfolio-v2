@@ -64,6 +64,9 @@ export default function HomeCanvas({ projects }: { projects: Project[] }) {
   const indexRef = useRef(index);
   const lockRef = useRef(false);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [imageHoverSide, setImageHoverSide] = useState<"prev" | "next" | null>(
+    null,
+  );
 
   useEffect(() => {
     indexRef.current = index;
@@ -98,6 +101,18 @@ export default function HomeCanvas({ projects }: { projects: Project[] }) {
 
   const goNext = useCallback(() => changeProject(1), [changeProject]);
   const goPrev = useCallback(() => changeProject(-1), [changeProject]);
+
+  // Hovering the main project visual shows the same live prev/next cursor
+  // used in the project-detail gallery; the counter stays in sync even if
+  // the pointer stays still while the project changes underneath it.
+  useEffect(() => {
+    if (!imageHoverSide) return;
+    const counter = `${String(index + 1).padStart(2, "0")}/${String(total).padStart(2, "0")}`;
+    setCursor(
+      imageHoverSide,
+      `${imageHoverSide === "prev" ? "PREV" : "NEXT"} (${counter})`,
+    );
+  }, [imageHoverSide, index, total, setCursor]);
 
   // Wheel/trackpad navigates projects while the canvas is in view. Once the
   // user reaches either end, the gesture is handed back to normal page
@@ -297,21 +312,42 @@ export default function HomeCanvas({ projects }: { projects: Project[] }) {
               animate="center"
               exit="exit"
               transition={{ duration: 0.9, delay: imageDelay, ease: EASE }}
-              className="h-full w-full"
+              className="relative h-full w-full"
             >
-              <Link
-                href={href}
-                onClick={handleView}
-                {...cursorProps}
-                className={`block h-full w-full ${isDesktop ? "cursor-none" : ""}`}
-              >
-                <ProjectVisual
-                  tone={project.tone}
-                  ratio="h-full"
-                  className="h-full transition-transform duration-500 ease-[var(--ease-editorial)] hover:scale-[1.02]"
-                  label={project.number}
-                />
-              </Link>
+              <ProjectVisual
+                tone={project.tone}
+                ratio="h-full"
+                className="h-full transition-transform duration-500 ease-[var(--ease-editorial)] hover:scale-[1.02]"
+                label={project.number}
+              />
+              <button
+                type="button"
+                aria-label="Previous project"
+                onClick={goPrev}
+                disabled={index === 0}
+                onMouseEnter={() => setImageHoverSide("prev")}
+                onMouseLeave={() => {
+                  setImageHoverSide(null);
+                  resetCursor();
+                }}
+                className={`absolute inset-y-0 left-0 w-1/2 disabled:pointer-events-none ${
+                  isDesktop ? "cursor-none" : ""
+                }`}
+              />
+              <button
+                type="button"
+                aria-label="Next project"
+                onClick={goNext}
+                disabled={index === total - 1}
+                onMouseEnter={() => setImageHoverSide("next")}
+                onMouseLeave={() => {
+                  setImageHoverSide(null);
+                  resetCursor();
+                }}
+                className={`absolute inset-y-0 right-0 w-1/2 disabled:pointer-events-none ${
+                  isDesktop ? "cursor-none" : ""
+                }`}
+              />
             </motion.div>
           </AnimatePresence>
         </motion.div>
