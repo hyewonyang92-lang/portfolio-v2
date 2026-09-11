@@ -7,7 +7,7 @@ import { useCursor, type CursorVariant } from "@/lib/cursor-context";
 import { useDesktopInteraction } from "@/lib/use-desktop-interaction";
 
 const CIRCLE_LINES: Partial<Record<CursorVariant, [string, string]>> = {
-  "view-project": ["VIEW", "PROJECT"],
+  "view-project": ["VIEW", "CASE"],
 };
 
 export default function CustomCursor() {

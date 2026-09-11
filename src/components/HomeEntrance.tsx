@@ -2,7 +2,6 @@
 
 import { useLayoutEffect } from "react";
 import { motion } from "framer-motion";
-import { useSmoothScroll } from "@/lib/use-smooth-scroll";
 
 function getSavedScroll() {
   if (typeof window === "undefined") return null;
@@ -14,7 +13,6 @@ export default function HomeEntrance({
 }: {
   children: React.ReactNode;
 }) {
-  useSmoothScroll(true);
   const savedScroll = getSavedScroll();
   const isRestoring = savedScroll !== null;
 
