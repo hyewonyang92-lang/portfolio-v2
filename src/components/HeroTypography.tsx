@@ -4,10 +4,11 @@ import { useEffect, useRef } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useDesktopInteraction } from "@/lib/use-desktop-interaction";
 
-const LAYERS = [
-  { strength: 1, className: "text-meta text-[var(--color-text-secondary)]" },
-  { strength: 0.6, className: "text-display uppercase" },
-  { strength: 0.35, className: "text-meta text-[var(--color-text-secondary)]" },
+const LINES = [
+  { text: "BUILDING BETTER", indentClass: "", strength: 1 },
+  { text: "EXPERIENCES,", indentClass: "md:ml-[4%]", strength: 0.7 },
+  { text: "PROCESS BY", indentClass: "", strength: 0.85 },
+  { text: "PROCESS.", indentClass: "md:ml-[8%]", strength: 0.55 },
 ];
 
 export default function HeroTypography() {
@@ -26,12 +27,9 @@ export default function HeroTypography() {
 
     const handleMove = (e: MouseEvent) => {
       const rect = el.getBoundingClientRect();
-      const relX = (e.clientX - rect.left) / rect.width - 0.5;
-      const relY = (e.clientY - rect.top) / rect.height - 0.5;
-      mvX.set(relX * 2);
-      mvY.set(relY * 2);
+      mvX.set(((e.clientX - rect.left) / rect.width - 0.5) * 2);
+      mvY.set(((e.clientY - rect.top) / rect.height - 0.5) * 2);
     };
-
     const handleLeave = () => {
       mvX.set(0);
       mvY.set(0);
@@ -48,42 +46,83 @@ export default function HeroTypography() {
   return (
     <div
       ref={ref}
-      className="container-editorial flex min-h-[calc(100dvh-72px)] flex-col justify-center gap-6 py-24 md:min-h-[calc(100dvh-88px)] md:gap-8"
+      className="container-full flex min-h-[100dvh] flex-col justify-between pt-[110px] pb-16 md:pt-[140px]"
     >
-      <HeroLayer x={springX} y={springY} strength={LAYERS[0].strength}>
-        <span className={LAYERS[0].className}>UI/UX DESIGNER — SEOUL, KOREA</span>
-      </HeroLayer>
-
-      <HeroLayer x={springX} y={springY} strength={LAYERS[1].strength}>
-        <h1 className={LAYERS[1].className}>
-          BUILDING BETTER
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <span className="text-meta text-[var(--color-text-secondary)]">
+          UI/UX DESIGNER
           <br />
-          EXPERIENCES,
+          SEOUL, KOREA
+        </span>
+        <span className="text-meta text-right text-[var(--color-text-secondary)]">
+          PORTFOLIO
           <br />
-          PROCESS BY PROCESS.
-        </h1>
-      </HeroLayer>
+          2026
+        </span>
+      </div>
 
-      <HeroLayer x={springX} y={springY} strength={LAYERS[2].strength}>
-        <span className={LAYERS[2].className}>YANG HYEWON</span>
-      </HeroLayer>
+      <div className="my-12 md:my-0">
+        {LINES.map((line, i) => (
+          <HeroLine
+            key={line.text}
+            x={springX}
+            y={springY}
+            strength={line.strength}
+            indentClass={line.indentClass}
+            delay={i * 0.08}
+          >
+            {line.text}
+          </HeroLine>
+        ))}
+      </div>
+
+      <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
+        <span className="text-meta text-[var(--color-text-secondary)]">
+          YANG HYEWON
+        </span>
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="max-w-xs text-right text-base text-[var(--color-text-secondary)] md:max-w-sm md:text-lg"
+        >
+          I design digital products that feel clear, considered, and quietly
+          confident.
+        </motion.p>
+      </div>
     </div>
   );
 }
 
-function HeroLayer({
+function HeroLine({
   x,
   y,
   strength,
+  indentClass = "",
+  delay,
   children,
 }: {
   x: ReturnType<typeof useSpring>;
   y: ReturnType<typeof useSpring>;
   strength: number;
+  indentClass?: string;
+  delay: number;
   children: React.ReactNode;
 }) {
-  const dx = useTransform(x, (v) => v * 8 * strength);
+  const dx = useTransform(x, (v) => v * 10 * strength);
   const dy = useTransform(y, (v) => v * 6 * strength);
 
-  return <motion.div style={{ x: dx, y: dy }}>{children}</motion.div>;
+  return (
+    <div className={`overflow-hidden ${indentClass}`}>
+      <motion.div
+        initial={{ opacity: 0, y: "100%" }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <motion.h1 style={{ x: dx, y: dy }} className="text-jumbo uppercase">
+          {children}
+        </motion.h1>
+      </motion.div>
+    </div>
+  );
 }

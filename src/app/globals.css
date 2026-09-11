@@ -74,6 +74,22 @@ body {
   }
 }
 
+.container-full {
+  padding-inline: var(--pad-mobile);
+}
+
+@media (min-width: 768px) {
+  .container-full {
+    padding-inline: var(--pad-tablet);
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-full {
+    padding-inline: var(--pad-desktop);
+  }
+}
+
 .grid-editorial {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -92,6 +108,13 @@ body {
     grid-template-columns: repeat(12, 1fr);
     gap: 24px;
   }
+}
+
+.text-jumbo {
+  font-size: clamp(2.25rem, 9vw, 12rem);
+  line-height: 0.88;
+  letter-spacing: -0.03em;
+  font-weight: 600;
 }
 
 .text-display {
