@@ -14,10 +14,19 @@ interface ProjectGalleryProps {
 export default function ProjectGallery({ tones }: ProjectGalleryProps) {
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(1);
+  const [hoverSide, setHoverSide] = useState<"prev" | "next" | null>(null);
   const { setCursor, resetCursor } = useCursor();
   const { isDesktop } = useDesktopInteraction();
 
   const total = tones.length;
+
+  // Keep the cursor's counter in sync with the current image even while the
+  // pointer stays still over the same half (e.g. after a keyboard nav).
+  useEffect(() => {
+    if (!hoverSide) return;
+    const counter = `${String(index + 1).padStart(2, "0")}/${String(total).padStart(2, "0")}`;
+    setCursor(hoverSide, `${hoverSide === "prev" ? "PREV" : "NEXT"} (${counter})`);
+  }, [hoverSide, index, total, setCursor]);
 
   const goNext = useCallback(() => {
     setDirection(1);
@@ -78,16 +87,22 @@ export default function ProjectGallery({ tones }: ProjectGalleryProps) {
           type="button"
           aria-label="Previous image"
           onClick={goPrev}
-          onMouseEnter={() => setCursor("prev")}
-          onMouseLeave={resetCursor}
+          onMouseEnter={() => setHoverSide("prev")}
+          onMouseLeave={() => {
+            setHoverSide(null);
+            resetCursor();
+          }}
           className="absolute inset-y-0 left-0 w-1/2"
         />
         <button
           type="button"
           aria-label="Next image"
           onClick={goNext}
-          onMouseEnter={() => setCursor("next")}
-          onMouseLeave={resetCursor}
+          onMouseEnter={() => setHoverSide("next")}
+          onMouseLeave={() => {
+            setHoverSide(null);
+            resetCursor();
+          }}
           className="absolute inset-y-0 right-0 w-1/2"
         />
       </div>
